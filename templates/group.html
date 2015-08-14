@@ -1,0 +1,41 @@
+<title>Group {{ group.name }}</title>
+
+<h1>Group {{ group.name }}</h1>
+
+<h2>Players</h2>
+
+<ul>
+{% for player in group.players %}
+    <li>
+        {{ player.name }}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Answers</h2>
+
+{% macro link_image(src) -%}
+    <a href="{{ src }}">
+        <img width="300" src="{{ src }}">
+    </a>
+{%- endmacro %}
+
+{% for puzzle, answers in group_answers %}
+    <h3>{{ puzzle }}</h3>
+
+    {% for answer in answers %}
+        <p>
+            {{ answer.player.name }}: {{ answer.question }}
+            <br>
+            {% if answer.value.startswith('image:') %}
+                {{ link_image('/static/images/' + answer.value.lstrip('image:')) }}
+            {% elif answer.value.startswith('video:') %}
+                <video controls>
+                    <source type="video/mp4" src="/static/videos/{{ answer.value.lstrip('video:') }}">
+                </video>
+            {% else %}
+                {{ answer.value }}
+            {% endif %}
+        </p>
+    {% endfor %}
+{% endfor %}

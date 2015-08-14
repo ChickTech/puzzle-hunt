@@ -1,0 +1,11 @@
+<title>Groups</title>
+
+<h1>Groups</h1>
+
+<ul>
+{% for group in groups %}
+    <li>
+        <a href="/groups/{{ group.name }}">{{ group.name }}</a>
+    </li>
+{% endfor %}
+</ul>
