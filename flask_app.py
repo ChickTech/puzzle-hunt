@@ -30,13 +30,13 @@ def index():
 @app.route('/register/<group_name>/<player_name>')
 def register(group_name, player_name):
     group, _ = Group.get_or_create(name=group_name)
-    
+
     try:
         player = Player.get(group=group, name=player_name)
     except Player.DoesNotExist:
-        player = Player.create(group=group, name=player_name, 
+        player = Player.create(group=group, name=player_name,
             order=group.players.count())
-    
+
     return str(player.id)
 
 
@@ -57,7 +57,7 @@ def group(group_name):
         group_answers.append((puzzle.name, puzzle_answers))
 
     return render_template(
-        'group.html', 
+        'group.html',
         group=Group.get(Group.name == group_name),
         group_answers=group_answers)
 
@@ -116,69 +116,46 @@ def icebreaker(player_id):
     return ICEBREAKER_QUESTIONS[player.order]
 
 
-# class SignLanguageView(FlaskView):
-#     items = [
-#         'Hamburger',
-#         'Sleep',
-#         'Angry',
-#         'Who',
-#         'Bird',
-#     ]
+DOODLE_ASSIGNMENTS = [
+    'Elf ears',
+    'Cat whiskers',
+    'Bunny ears',
+    'Crabby hands',
+    'Viking helment',
+]
 
-#     @route('/assignment/<key>')
-#     def item(self, key):
-#         player = get_player(key)
-#         return self.items[player.number]
-
-#     @route('/answer/<key>/<value>')
-#     def question(self, key, value):
-#         set_answer('Sign Language', key, value)
-#         return 'OK'
-
-# SignLanguageView.register(app)
+@app.route('/doodle/<player_id>')
+def doodle(player_id):
+    player = Player.get(Player.id == player_id)
+    return DOODLE_ASSIGNMENTS[player.order]
 
 
-# class DoodleView(FlaskView):
-#     assignments = [
-#         'Elf ears',
-#         'Cat whiskers',
-#         'Bunny ears',
-#         'Crabby hands',
-#         'Viking helment',
-#     ]
+SIGN_LANGUAGE_ASSIGNMENTS = [
+    'Hamburger',
+    'Sleep',
+    'Angry',
+    'Who',
+    'Bird',
+]
 
-#     @route('/question/<key>')
-#     def assignment(self, key):
-#         player = get_player(key)
-#         return self.assignments[player.number]
-
-#     @route('/answer/<key>/<value>')
-#     def question(self, key, value):
-#         set_answer('Doodle', key, value)
-#         return 'OK'
-
-# DoodleView.register(app)
+@app.route('/sign-language/<player_id>')
+def sign_language(player_id):
+    player = Player.get(Player.id == player_id)
+    return SIGN_LANGUAGE_ASSIGNMENTS[player.order]
 
 
-# class HistoryView(FlaskView):
-#     items = [
-#         ('POTOMAC', 'a famous river'),
-#         ('QUINCY', 'a famous river'),
-#         ('DIPPING', 'a famous river'),
-#         ('INTERVIEW', 'a famous river'),
-#     ]
+WHO_AM_I_CLUES = [
+    ('POTOMAC', 'a famous river'),
+    ('QUINCY', 'a brown line stop'),
+    ('DIPPING', 'a hummus-related action'),
+    ('INTERVIEW', 'a type of conversation'),
+]
 
-#     @route('/clue/<key>')
-#     def item(self, key):
-#         player = get_player(key)
-#         return self.items[player.number]
+@app.route('/who-am-i/<player_id>')
+def who_am_i(player_id):
+    player = Player.get(Player.id == player_id)
+    return WHO_AM_I_CLUES[player.order]
 
-#     @route('/answer/<key>/<value>')
-#     def question(self, key, value):
-#         set_answer('History', key, self.items[player.number], value)
-#         return 'OK'
-
-# HistoryView.register(app)
 
 def set_answer(puzzle_name, player_id, question, content_type, content):
     player = Player.get(Player.id == player_id)
@@ -190,22 +167,22 @@ def set_answer(puzzle_name, player_id, question, content_type, content):
         answer = Answer(puzzle=puzzle, player=player)
 
     answer.question = question
-    
+
     if content_type == 'text':
         answer.value = content
     elif content_type == 'image':
         filename = '%s_%s.jpg' %  (puzzle.id, player.id)
         path = '%s/images/%s' % (STATIC_DIR, filename)
-        with open(path, 'wb') as fp: 
+        with open(path, 'wb') as fp:
             fp.write(content)
         answer.value = 'image:' + filename
     elif content_type == 'video':
         filename = '%s_%s.mp4' %  (puzzle.id, player.id)
         path = '%s/videos/%s' % (STATIC_DIR, filename)
-        with open(path, 'wb') as fp: 
+        with open(path, 'wb') as fp:
             fp.write(content)
         answer.value = 'video:' + filename
-        
+
     answer.save()
 
 
