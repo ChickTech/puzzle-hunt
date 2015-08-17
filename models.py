@@ -1,8 +1,10 @@
-from peewee import (SqliteDatabase, Model, CharField, IntegerField, 
+import os.path as op
+from peewee import (SqliteDatabase, Model, CharField, IntegerField,
     ForeignKeyField)
 
 
-db = SqliteDatabase('database.db', threadlocals=True)
+HERE = op.abspath(op.dirname(__file__))
+db = SqliteDatabase(op.join(HERE, 'database.db'), threadlocals=True)
 
 
 class BaseModel(Model):
@@ -26,7 +28,7 @@ class Player(BaseModel):
         return "%s, %d" % (self.name, self.order)
 
 
-class Puzzle(BaseModel): 
+class Puzzle(BaseModel):
     name = CharField()
 
     def __unicode__(self):
