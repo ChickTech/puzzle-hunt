@@ -3,3 +3,4 @@ flask-admin
 geopy
 peewee
 pyqrcode
+wtf-peewee
