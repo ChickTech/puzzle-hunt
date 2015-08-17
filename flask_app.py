@@ -117,11 +117,11 @@ def icebreaker(player_id):
 
 
 DOODLE_ASSIGNMENTS = [
-    'Elf ears',
-    'Cat whiskers',
-    'Bunny ears',
-    'Crabby hands',
-    'Viking helment',
+    'cat whiskers',
+    'bunny ears',
+    'crabby hands',
+    'a frog tongue catching a fly',
+    'viking helment',
 ]
 
 @app.route('/doodle/<player_id>')
@@ -131,11 +131,11 @@ def doodle(player_id):
 
 
 SIGN_LANGUAGE_ASSIGNMENTS = [
-    'Hamburger',
-    'Sleep',
-    'Angry',
-    'Who',
-    'Bird',
+    'hamburger',
+    'sleep',
+    'angry',
+    'who',
+    'bird',
 ]
 
 @app.route('/sign-language/<player_id>')
@@ -154,7 +154,7 @@ WHO_AM_I_CLUES = [
 @app.route('/who-am-i/<player_id>')
 def who_am_i(player_id):
     player = Player.get(Player.id == player_id)
-    return WHO_AM_I_CLUES[player.order]
+    return '|'.join(WHO_AM_I_CLUES[player.order])
 
 
 def set_answer(puzzle_name, player_id, question, content_type, content):
