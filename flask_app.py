@@ -118,11 +118,11 @@ def icebreaker(player_id):
 
 
 DOODLE_ASSIGNMENTS = [
-    'Elf ears',
-    'Cat whiskers',
-    'Bunny ears',
-    'Crabby hands',
-    'Viking helment',
+    'cat whiskers',
+    'bunny ears',
+    'crabby hands',
+    'a frog tongue catching a fly',
+    'viking helment',
 ]
 
 @app.route('/doodle/<player_id>')
@@ -132,11 +132,11 @@ def doodle(player_id):
 
 
 SIGN_LANGUAGE_ASSIGNMENTS = [
-    'Hamburger',
-    'Sleep',
-    'Angry',
-    'Who',
-    'Bird',
+    'hamburger',
+    'sleep',
+    'angry',
+    'who',
+    'bird',
 ]
 
 @app.route('/sign-language/<player_id>')
