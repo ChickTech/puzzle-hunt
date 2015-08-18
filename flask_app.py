@@ -84,7 +84,7 @@ def qrcode(text):
 @app.route('/answer/<puzzle_name>/<player_id>/<question>', methods=['POST'])
 def answer(puzzle_name, player_id, question):
     set_answer(puzzle_name, player_id, question, 'text', request.get_data())
-    return 'OK'
+    return 'Answer submitted'
 
 
 @app.route('/upload-image/<puzzle_name>/<player_id>/<question>', methods=['POST'])
@@ -92,7 +92,7 @@ def upload_image(puzzle_name, player_id, question):
     if request.content_length > MAX_CONTENT_LENGTH:
         return 'Images cannot be larger than 1 MB'
     set_answer(puzzle_name, player_id, question, 'image', request.get_data())
-    return 'OK'
+    return 'Image submitted'
 
 
 @app.route('/upload-video/<puzzle_name>/<player_id>/<question>', methods=['POST'])
@@ -100,7 +100,7 @@ def upload_video(puzzle_name, player_id, question):
     if request.content_length > MAX_CONTENT_LENGTH:
         return 'Videos cannot be larger than 1 MB'
     set_answer(puzzle_name, player_id, question, 'video', request.get_data())
-    return 'OK'
+    return 'Video submitted'
 
 
 ICEBREAKER_QUESTIONS = [
