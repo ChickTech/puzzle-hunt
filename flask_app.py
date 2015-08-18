@@ -1,4 +1,5 @@
 import io
+import random
 import os.path as op
 from flask import Flask, request, render_template, url_for
 from flask_admin import Admin
@@ -154,7 +155,12 @@ WHO_AM_I_CLUES = [
 @app.route('/who-am-i/<player_id>')
 def who_am_i(player_id):
     player = Player.get(Player.id == player_id)
-    return WHO_AM_I_CLUES[player.order]
+    anagram, description = WHO_AM_I_CLUES[player.order]
+    # Shuffle the letters.
+    anagram = list(anagram)
+    random.shuffle(anagram)
+    anagram = ''.join(anagram)
+    return '%s|%s' % (anagram, description)
 
 
 def set_answer(puzzle_name, player_id, question, content_type, content):
