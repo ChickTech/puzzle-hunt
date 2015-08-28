@@ -30,13 +30,16 @@ def index():
 
 @app.route('/register/<group_name>/<player_name>')
 def register(group_name, player_name):
+    group_name = group_name.strip()
+    player_name = player_name.strip()
+
     group, _ = Group.get_or_create(name=group_name)
 
     try:
         player = Player.get(group=group, name=player_name)
     except Player.DoesNotExist:
-        player = Player.create(group=group, name=player_name,
-            order=group.players.count())
+        player = Player.create(
+            group=group, name=player_name, order=group.players.count())
 
     return str(player.id)
 
