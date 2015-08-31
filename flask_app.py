@@ -7,6 +7,7 @@ from flask_admin.contrib.peewee import ModelView
 import pyqrcode
 from geopy.distance import vincenty
 import peewee
+from peewee import fn
 
 from models import db, Group, Player, Puzzle, Answer
 
@@ -33,10 +34,15 @@ def register(group_name, player_name):
     group_name = group_name.strip()
     player_name = player_name.strip()
 
-    group, _ = Group.get_or_create(name=group_name)
+    try:
+        # Perform case-insensitive search.
+        group = Group.get(fn.Lower(Group.name) == group_name.lower())
+    except:
+        group = Group.create(name=group_name)
 
     try:
-        player = Player.get(group=group, name=player_name)
+        # Perform case-insensitive search.
+        player = Player.get(fn.lower(Player.name) == player_name.lower(), group=group)
     except Player.DoesNotExist:
         player = Player.create(
             group=group, name=player_name, order=group.players.count())
