@@ -1,4 +1,4 @@
-mkvirtualenv puzzle-hunt --python=`which python3`
+mkvirtualenv -p python3 puzzle-hunt
 pip install -r requirements.txt
 python -c "
 from models import db, Group, Player, Puzzle, Answer
