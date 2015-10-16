@@ -82,12 +82,15 @@ def distance(coords):
     return str(result)
 
 
-@app.route('/qrcode/<text>')
-def qrcode(text):
-    buffer = io.BytesIO()
-    code = pyqrcode.create(text)
-    code.svg(buffer, scale=8, background='white')
-    return buffer.getvalue()
+@app.route('/qrcode', methods=['GET', 'POST'])
+def qrcode():
+    if request.method == 'GET':
+        return render_template('qrcode.html')
+    else:
+        buffer = io.BytesIO()
+        code = pyqrcode.create(request.form['text'])
+        code.svg(buffer, scale=int(request.form['scale']))
+        return buffer.getvalue()
 
 
 @app.route('/answer/<puzzle_name>/<player_id>/<question>', methods=['POST'])
