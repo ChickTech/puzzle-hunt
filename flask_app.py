@@ -1,7 +1,7 @@
 import io
 import random
 import os.path as op
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, Response, render_template, url_for
 from flask_admin import Admin
 from flask_admin.contrib.peewee import ModelView
 import pyqrcode
@@ -90,7 +90,7 @@ def qrcode():
         buffer = io.BytesIO()
         code = pyqrcode.create(request.form['text'])
         code.svg(buffer, scale=int(request.form['scale']))
-        return buffer.getvalue()
+        return Response(buffer.getvalue(), mimetype='image/svg+xml')
 
 
 @app.route('/answer/<puzzle_name>/<player_id>/<question>', methods=['POST'])
