@@ -9,7 +9,7 @@ Open a bash console in PythonAnywhere and run the following commands:
 ```
 git clone https://github.com/chicktech/puzzle-hunt.git
 cd puzzle-hunt
-./setup.sh
+. setup.sh
 ```
 
 ## Create a new web app
