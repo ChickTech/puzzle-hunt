@@ -1,6 +1,7 @@
 mkvirtualenv -p python3 puzzle-hunt
 pip install -r requirements.txt
 mkdir static/images
+mkdir static/videos
 python -c "
 from models import db, Group, Player, Puzzle, Answer
 db.connect()

@@ -8,10 +8,15 @@ import sys
 import requests
 
 # print(sys.argv)
-puzzle_name, player_id, question, value = sys.argv[1:]
+puzzle_name, player_id, question, answer = sys.argv[1:]
 
-url = 'http://localhost:5000/answer/%s/%s/%s' % (
-    puzzle_name, player_id, question)
+url = 'http://localhost:5000/answer/'
 
-res = requests.post(url, data=value)
+data = dict(
+    puzzle=puzzle_name,
+    player_id=player_id,
+    question=question,
+    answer=answer,
+)
+res = requests.post(url, data=data)
 print(res.text)

@@ -5,7 +5,6 @@ from flask import Flask, request, Response, render_template, url_for
 from flask_admin import Admin
 from flask_admin.contrib.peewee import ModelView
 import pyqrcode
-from geopy.distance import vincenty
 import peewee
 from peewee import fn
 
@@ -29,25 +28,15 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/register/<group_name>/<player_name>')
-def register(group_name, player_name):
-    group_name = group_name.strip()
-    player_name = player_name.strip()
-
-    try:
-        # Perform case-insensitive search.
-        group = Group.get(fn.Lower(Group.name) == group_name.lower())
-    except:
-        group = Group.create(name=group_name)
-
-    try:
-        # Perform case-insensitive search.
-        player = Player.get(fn.lower(Player.name) == player_name.lower(), group=group)
-    except Player.DoesNotExist:
-        player = Player.create(
-            group=group, name=player_name, order=group.players.count())
-
-    return str(player.id)
+@app.route('/qrcode', methods=['GET', 'POST'])
+def qrcode():
+    if request.method == 'GET':
+        return render_template('qrcode.html')
+    else:
+        buffer = io.BytesIO()
+        code = pyqrcode.create(request.form['text'])
+        code.svg(buffer, scale=int(request.form['scale']))
+        return Response(buffer.getvalue(), mimetype='image/svg+xml')
 
 
 @app.route('/groups')
@@ -72,46 +61,52 @@ def group(group_name):
         group_answers=group_answers)
 
 
-@app.route('/distance/<coords>')
-def distance(coords):
-    # Convert coordinates from string to float.
-    lat1, long1, lat2, long2 = [float(s) for s in coords.split(',')]
-    # Return the distance in miles.
-    result = vincenty((lat1, long1), (lat2, long2)).miles
-    # Convert back to string.
-    return str(result)
+@app.route('/register/', methods=['POST'])
+def register():
+    group_name = request.form['group'].strip()
+    player_name = request.form['player'].strip()
+
+    try:
+        # Perform case-insensitive search.
+        group = Group.get(fn.Lower(Group.name) == group_name.lower())
+    except:
+        group = Group.create(name=group_name)
+
+    try:
+        # Perform case-insensitive search.
+        player = Player.get(fn.lower(Player.name) == player_name.lower(), group=group)
+    except Player.DoesNotExist:
+        player = Player.create(
+            group=group, name=player_name, order=group.players.count())
+
+    return str(player.id)
 
 
-@app.route('/qrcode', methods=['GET', 'POST'])
-def qrcode():
-    if request.method == 'GET':
-        return render_template('qrcode.html')
-    else:
-        buffer = io.BytesIO()
-        code = pyqrcode.create(request.form['text'])
-        code.svg(buffer, scale=int(request.form['scale']))
-        return Response(buffer.getvalue(), mimetype='image/svg+xml')
-
-
-@app.route('/answer/<puzzle_name>/<player_id>/<question>', methods=['POST'])
-def answer(puzzle_name, player_id, question):
-    set_answer(puzzle_name, player_id, question, 'text', request.get_data())
+@app.route('/answer/', methods=['POST'])
+def answer():
+    puzzle_name = request.form['puzzle']
+    player_id = request.form['player_id']
+    question = request.form['question']
+    answer = request.form['answer']
+    set_answer(puzzle_name, player_id, question, 'text', answer)
     return 'Answer submitted'
 
 
-@app.route('/upload-image/<puzzle_name>/<player_id>/<question>', methods=['POST'])
-def upload_image(puzzle_name, player_id, question):
+@app.route('/upload-image/', methods=['POST'])
+def upload_image():
     if request.content_length > MAX_CONTENT_LENGTH:
         return 'Images cannot be larger than 1 MB'
-    set_answer(puzzle_name, player_id, question, 'image', request.get_data())
+    ar = request.args
+    set_answer(ar['puzzle'], ar['player_id'], ar['question'], 'image', request.get_data())
     return 'Image submitted'
 
 
-@app.route('/upload-video/<puzzle_name>/<player_id>/<question>', methods=['POST'])
-def upload_video(puzzle_name, player_id, question):
+@app.route('/upload-video/', methods=['POST'])
+def upload_video():
     if request.content_length > MAX_CONTENT_LENGTH:
         return 'Videos cannot be larger than 1 MB'
-    set_answer(puzzle_name, player_id, question, 'video', request.get_data())
+    ar = request.args
+    set_answer(ar['puzzle'], ar['player_id'], ar['question'], 'video', request.get_data())
     return 'Video submitted'
 
 
